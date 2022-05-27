@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif !important;
+   
+}
+.box {
+    margin-top: 3%;
+
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 1);
+    border-top: 3px solid red;
+    border-bottom: 3px solid red;
+    padding: 40px;
+    background-color: rgb(255, 255, 255);
+    opacity: 1;
+    height: 550px;
+    height: auto;
+}
+.hr {
+    border-bottom: 2px solid rgb(255, 195, 0);
+
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+.button {
+    margin-top: 1%;
+}
+body {
+    background: url("/img/bgA.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.formlogin { position: relative; }
+.formlogin input { text-indent: 21px;}
+.formlogin .fa-user { 
+  position: absolute;
+  top: 12px;
+  left: 9px;
+  font-size: 15px;
+}
+
+.formlogin .fa-key{ 
+    position: absolute;
+    top: 12px;
+    left: 9px;
+    font-size: 15px;
+  }

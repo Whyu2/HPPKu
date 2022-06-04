@@ -22,7 +22,7 @@
                   
                     <div class="col-8 mt-3  kembali">
                       <label class="font-weight-bold" >Kode Makanan :
-                        <select class="form-select"  id="makanan" name="kd_makanan"   aria-label="Default select example" required="required">
+                        <select class="form-select"  id="makanan" name="kd_makanan"   aria-label="Default select example" required>
                         
                         <option value="" selected>Pilih Makanan</option>
                         @foreach ($makanan as $m)
@@ -52,7 +52,7 @@
                         <div class="col-sm-7">
                        <label>Bahan Baku</label>
                        <select class="form-select" name="kd_bahan[]" aria-label="Default select example" required >
-                        <option selected>Pilih Bahan</option>
+                        <option value="" selected>Pilih Makanan</option>
                         @foreach ($bahan as $b)
                         <option value="{{$b->id}}">{{$b->kd_bahan}} - {{$b->nama_bahan}} <p class="text-center">{{formatIDR($b->harga)}}/{{$b->satuan}}</p></option>
                         @endforeach
@@ -66,7 +66,7 @@
                         </div>
                         <div class="col-sm-2">
                        <label>QTY</label>
-                       <input type="text" name="qty[]"  class="form-control" @error('qty[]') is-invalid @enderror id="qty" required >
+                       <input type="text" name="qty[]"  class="form-control" @error('qty[]') is-invalid @enderror id="qty" required  >
                           @error('qty[]')
                           <div class="invalid-feedback d-block">
                           Jumlah QTY harus disi
@@ -105,7 +105,12 @@
                              </div>
                              <div class="col-sm-2">
                             <label>QTY</label>
-                            <input type="text" name="qty[]" class="form-control" id="qty" required>
+                            <input type="text" name="qty[]"  class="form-control" @error('qty[]') is-invalid @enderror id="qty" required  >
+                          @error('qty[]')
+                          <div class="invalid-feedback d-block">
+                          Jumlah QTY harus disi
+                          </div>
+                          @enderror
                             
                              </div>
                              {{-- <div class="col-sm-2 mt-4">

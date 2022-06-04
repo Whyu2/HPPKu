@@ -97,11 +97,6 @@ class DatabaseSeeder extends Seeder
             'besaran' => 10,
             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
             'updated_at' => Carbon::now()->format('Y-m-d H:i:s')],
-           ['nama_bop' => 'Sales Price',
-           'keterangan' => 'Berisi biaya penolong (Pembayaran kepada suplier)',
-           'besaran' => 30,
-           'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-           'updated_at' => Carbon::now()->format('Y-m-d H:i:s')]
            ]);
            DB::table('btkls')->insert([
             ['nama_btkl' => 'chef',
@@ -118,6 +113,13 @@ class DatabaseSeeder extends Seeder
             'created_at' => Carbon::now()->format('Y-m-d H:i:s')],
             ['nama_waktu' => 'Dinner',
           'created_at' => Carbon::now()->format('Y-m-d H:i:s')]
+           ]);
+           DB::table('costs')->insert([
+            ['nama_cost' => 'Cost Percentace',
+            'keterangan' => 'Penentuan Harga jual',
+            'besaran' => 30,
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            'updated_at' => Carbon::now()->format('Y-m-d H:i:s')],
            ]);
       
            

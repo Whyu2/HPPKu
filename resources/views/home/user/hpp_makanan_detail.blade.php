@@ -4,8 +4,7 @@
              {{-- pemanggilan function dari model --}}
              @php
              $tot_bahan = $resep->totalbahan($makanan_detail->id);
-             $tot_garnitur = $hpp->totalgarnitur($makanan_detail->id);
-             $tot_sales = $hpp->totalsales($makanan_detail->id);
+       
              @endphp
         <main>
           <div class="container-fluid px-4">
@@ -75,14 +74,14 @@
                             
        
                             <?php $number=1; ?>
-                            @foreach ($bahan_makanan as $key => $bahan_makanans)
+                            @foreach ($bahan_makanan as $bahan_makanans)
                                 <tr>
-                                  <td>{{$bahan_makanans['nama_bahan']}}</td>
-                                  <td  class=" text-center">{{$bahan_makanans['unit']}}</td>
-                                  <td class=" text-center">{{$bahan_makanans['qty']}}</td>
-                                  <td  class=" text-center">{{$bahan_makanans['price']}}</td>
+                                  <td>{{$bahan_makanans->bahan->nama_bahan}}</td>
+                                  <td  class=" text-center">{{$bahan_makanans->bahan->satuan}}</td>
+                                  <td class=" text-center">{{$bahan_makanans->qty}}</td>
+                                  <td  class=" text-center">{{$bahan_makanans->bahan->harga}}</td>
                                   @php 
-                                    $tot_bahan_qty = $hpp->bahanqty($bahan_makanans['qty'],$bahan_makanans['price'] );
+                                    $tot_bahan_qty = $hpp->bahanqty($bahan_makanans->qty,$bahan_makanans->bahan->harga );
                                   @endphp
                                   <td  class=" text-center">{{$tot_bahan_qty}}</td>
                                   <?php $number++; ?>
@@ -96,7 +95,7 @@
                                   <th  class=" text-center">{{($hpp_detail->total_bahan)}}</th>
                                 </tr>
                                 <tr>
-                                  <td colspan="3">{{$hpp_detail->btkl->nama_btkl}} {{formatIDR($hpp_detail->besaran_btkl)}}/PCS</td>
+                                  <td colspan="3">{{$btkl->nama_btkl}} {{formatIDR($hpp_detail->besaran_btkl)}}/PCS</td>
                                   <td  class=" text-center"></td>
                                   <td  class=" text-center">{{($btkl->besaran)}}</td>
                                 </tr>
@@ -106,14 +105,9 @@
                                   <th  class=" text-center">{{$hpp_detail->total_btkl}}</th>
                                 </tr>
                                 <tr>
-                                  <td colspan="3">{{$bop->nama_bop}} ({{$hpp_detail->besaran_bop1}}%)</td>
+                                  <td colspan="3">{{$bop->nama_bop}} ({{$hpp_detail->besaran_bop}}%)</td>
                                   <td  class=" text-center"></td>
-                                  <td  class=" text-center">{{$tot_garnitur}}</td>
-                                </tr>
-                                <tr>
-                                  <td colspan="3">{{$bop2->nama_bop}} ({{$hpp_detail->besaran_bop2}}%)</td>
-                                  <td  class=" text-center"></td>
-                                  <td  class=" text-center">{{$tot_sales}}</td>
+                                  <td  class=" text-center">{{$hpp_detail->total_bop}}</td>
                                 </tr>
                           
                                 <tr>
@@ -127,7 +121,9 @@
                                   <td  class=" text-center"><b>{{$hpp_detail->total_hpp}}<b></td>
                                 </tr>
                                 <tr>
-                                  <td colspan="3"> <b>Harga Jual = </b> (Nilai HPP * 70% HPP) * 1,21)  </td>
+                                  <td colspan="3"> <b>Harga Jual</b> (HPP / Cost Precentace * 1,21) <br>
+                                  
+                                  </td>
                                   <td  class=" text-center"></td>
                                   <td  class=" text-center"><b>{{$hpp_detail->h_jual}}<b></td>
                                 </tr>
@@ -205,28 +201,42 @@
                                   </div>
                           
                                   </ul>
-                                  <div class="card-header">
-                      
-                                    <div class="col-md-7"><label>Update ({{formatDate($bop2->updated_at)}})</label></div>
-                                  </div>
+                               
                   
-                                  <ul class="list-group p-1">
-                             
-                                    <div class="list-group">
-                                      <div  class="d-flex justify-content-between list-group-item list-group-item-action">
-                                        <span class="">{{$bop2->nama_bop}} </span> 
-                                        <span class=""><b>{{$bop2->besaran}}%</b></span> 
-                                      </div>
-                            
-                                     
-                                    </div>
-                            
-                                    </ul>
+                               
                               </div>
                             
-                              {{-- <a href="{{route('deleteh',$detail->id)}}" class="btn btn-danger "><i class="fas fa-trash-alt fa-2x"></i></a> --}}
+                        
                      
                            </div>
+                           <div class="row">
+                            <div class="card-body">
+                              <div class="card-header">
+
+                                <div class="col-md-7"> <strong>Cost Precentace </strong></div>
+                                <div class="col-md-7"><label>Update ({{formatDate($cost->updated_at)}})</label></div>
+                              </div>
+              
+                              <ul class="list-group p-1">
+                         
+                                <div class="list-group">
+                                  <div  class="d-flex justify-content-between list-group-item list-group-item-action">
+                                    <span class="">{{$cost->nama_cost}} </span> 
+                                    <span class=""><b>{{$cost->besaran}}%</b></span> 
+                                  </div>
+                        
+                                 
+                                </div>
+                        
+                                </ul>
+                             
+                
+                             
+                            </div>
+                          
+                      
+                   
+                         </div>
                            
                            
                            

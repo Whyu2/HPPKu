@@ -16,12 +16,11 @@ class BopController extends Controller
     {
      
         $bo1 = Bop::find(1);
-        $bo2 = Bop::find(2);
+
 
         $data = [
             'title' => 'Edit BOP',
-            'bo1' => $bo1,
-            'bo2' => $bo2
+            'bo1' => $bo1
         ];
      
         return view('home.user.bop', $data);

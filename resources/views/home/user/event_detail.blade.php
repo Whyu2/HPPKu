@@ -135,14 +135,16 @@
                                   
                                   <td width="10px">:</td>
                        
-                                  <td>{{$detail->total_jual}}</td>
+                                  <td  width="350px"> {{$tot_jual}} * {{$lama}} = <b>{{$detail->total_jual}}</b></td>
                                   <td></td>
                                   
                                 </tr>
                                 <tr>
                                   <td width="150px"><b>Total HPP</b> ({{$lama}}hari)</td>
                                   <td width="10px">:</td>
-                                  <td>{{$detail->total_produksi}}</td>
+                       
+                                  
+                                  <td  width="350px">{{$tot_hpp}} * {{$lama}}  = <b>{{$detail->total_produksi}}</b></td>
                                 </tr>
                                 <tr>
                                   <td></td>
@@ -152,7 +154,7 @@
                                 <tr>
                                   <td width="150px"><b>Margin Kontribusi</b></td>                           
                                   <td width="10px">:</td>
-                                  <td>{{$grost_profit}}</td> 
+                                  <td><b>{{$grost_profit}}</b></td> 
                                 </tr>
                                 <tr>
                                   <td></td>

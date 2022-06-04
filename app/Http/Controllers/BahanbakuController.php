@@ -14,7 +14,8 @@ class BahanbakuController extends Controller
      */
     public function home()
     {
-        $b = Bahanbaku::paginate(15);
+
+        $b = Bahanbaku::orderBy('created_at', 'DESC')->get();
     
         $data = [
             'title' => 'Bahan Baku',

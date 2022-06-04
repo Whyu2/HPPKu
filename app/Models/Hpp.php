@@ -12,12 +12,9 @@ class Hpp extends Model
     use HasFactory;
     protected $fillable = [
         'makanan_id',
-        'btkl_id',
-        'bop1_id',
-        'bop2_id',
         'besaran_btkl',
-        'besaran_bop1',
-        'besaran_bop2',
+        'besaran_bop',
+        'besaran_cost',
         'total_bahan',
         'total_btkl',
         'total_bop',
@@ -39,27 +36,8 @@ class Hpp extends Model
         return $this->belongsTo(Btkl::class);
     }
     //menghitung total granitures
-    public function totalgarnitur ($id_hpp = null)
-    {
-         $m = Hpp::where('makanan_id',$id_hpp)->first();
-       
-            $besaran_garnitur = $m->besaran_bop1;
-            $result =($besaran_garnitur/100)*$m->total_bahan;
-            return $result;
-    }
     //menghitung total sales price
-    public function totalsales ($id_hpp = null)
-    {
-         $m = Hpp::where('makanan_id',$id_hpp)->first();
-       //cari total garnitur
-         $besaran_garnitur = $m->besaran_bop1;
-         $totalgranitures =($besaran_garnitur/100)*$m->total_bahan;
-        //hitung sales price
-         $besaran_sales = $m->besaran_bop2;
-         $cost_perportion = $m->total_bahan + $totalgranitures;
-         $result = ($besaran_sales/100) * $cost_perportion;
-        return $result;
-    }
+  
 
     //menghitung qty * harga bahan
     public function bahanqty ($qty = null, $h_bahan=null){

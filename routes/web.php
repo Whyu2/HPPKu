@@ -10,6 +10,7 @@ use App\Http\Controllers\MakananController;
 use App\Http\Controllers\HppController;
 use App\Http\Controllers\BopController;
 use App\Http\Controllers\BtklController;
+use App\Http\Controllers\CostController;
 use App\Http\Controllers\WaktuController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\CetakController;
@@ -86,11 +87,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin', [DasrbordController::class, 'homeuser'])->name('homeuser');
     Route::get('/bop', [BopController::class, 'home'])->name('home');
     Route::post('/bop/update/{id}', [BopController::class, 'update'])->name('updatebo');
-    Route::post('/bop/update/2/{id}', [BopController::class, 'update2'])->name('updatebo2');
 
     Route::get('/btkl', [BtklController::class, 'home'])->name('home');
     Route::get('/btkl/edit/{id}',  [BtklController::class, 'edit'])->name('editbt');
     Route::post('/btkl/update/{id}', [BtklController::class, 'update'])->name('updatebt');
+
+    Route::get('/cost', [CostController::class, 'home'])->name('home');
+    Route::get('/cost/edit/{id}',  [CostController::class, 'edit'])->name('editc');
+    Route::post('/cost/update/{id}', [CostController::class, 'update'])->name('updatec');
 
     Route::get('/waktu', [WaktuController::class, 'home'])->name('home');
     Route::get('/waktu/edit/{id}',  [WaktuController::class, 'edit'])->name('editwa');

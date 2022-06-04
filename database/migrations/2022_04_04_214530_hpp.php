@@ -16,12 +16,9 @@ class Hpp extends Migration
         Schema::create('hpps', function (Blueprint $table) {
             $table->id();
             $table->foreignId('makanan_id')->constrained('makanans')->onUpdate('cascade') ->onDelete('cascade');
-            $table->foreignId('btkl_id')->constrained('btkls')->onUpdate('cascade') ->onDelete('cascade');
-            $table->foreignId('bop1_id')->constrained('bops')->onUpdate('cascade') ->onDelete('cascade');
-            $table->foreignId('bop2_id')->constrained('bops')->onUpdate('cascade') ->onDelete('cascade');
             $table->integer('besaran_btkl');
-            $table->integer('besaran_bop1');
-            $table->integer('besaran_bop2');
+            $table->integer('besaran_bop');
+            $table->integer('besaran_cost');
             $table->integer('total_bahan');
             $table->integer('total_btkl');
             $table->integer('total_bop');

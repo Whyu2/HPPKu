@@ -102,8 +102,8 @@
                       <div class="row">
                         <div class="col-sm-7">
                        <label>Menu yang tersedia</label>
-                       <select class="form-select" name="hpp_id[]" aria-label="Default select example" >
-                        <option selected>Pilih Menu</option>
+                       <select class="form-select" name="hpp_id[]" aria-label="Default select example" required >
+                        <option value=""  selected>Pilih Menu</option>
                         <?php $number = 1; ?>
                         @foreach ($hpp as $key => $h)
                         <option value="{{$h->id}}">{{ $number }}. {{$h->makanan->nama_makanan}} | <b>HPP</b> {{formatIDR($h->total_hpp)}}</option>
@@ -144,8 +144,8 @@
                         <div class="row">
                           <div class="col-sm-7">
                             <label>Menu yang tersedia</label>
-                             <select class="form-select" name="hpp_id[]" aria-label="Default select example" >
-                                  <option selected>Pilih Menu</option>
+                             <select class="form-select" name="hpp_id[]" aria-label="Default select example" required >
+                                  <option value=""  selected>Pilih Menu</option>
                                   <?php $number = 1; ?>
                                   @foreach ($hpp as $key => $h)
                                    <option value="{{$h->id}}">{{ $number }}. {{$h->makanan->nama_makanan}} | <b>HPP</b> {{formatIDR($h->total_hpp)}}</option>

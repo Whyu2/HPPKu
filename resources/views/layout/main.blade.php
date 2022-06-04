@@ -282,6 +282,13 @@ data-bs-parent="#sidenavAccordion"
   </div>
   Ubah BTKL</a
 >
+<a class="nav-link" href="\cost"
+  >
+  <div class="sb-nav-link-icon">
+    <i class="far fa-money-bill-alt"></i>
+  </div>
+  Ubah Cost</a
+>
 </nav>
 </div>
 

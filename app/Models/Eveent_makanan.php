@@ -47,7 +47,13 @@ class Eveent_makanan extends Model
            foreach ($m as $q) {
             $qty[] = $q->qty;
             };
-            //ambil array hpp
+
+        //ambil array bahanbaku
+
+     foreach ($m as $p) {
+                $hpp[] = $p->hpp->total_hpp ;  
+                };
+            // ambil array hpp
             foreach ($m as $p) {
                 $hpp[] = $p->hpp->total_hpp ;  
                 };
@@ -56,7 +62,7 @@ class Eveent_makanan extends Model
                 foreach($qty as $i=>$val){
                 array_push($hpp_qty, $qty[$i] * $hpp[$i]);
                 }
-                //hitung total hpp
+                // hitung total hpp
                 $result =   array_sum($hpp_qty);
                 return $result;
     }

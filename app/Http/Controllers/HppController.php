@@ -9,6 +9,7 @@ use App\Models\Resep;
 use App\Models\Bop;
 use App\Models\Btkl;
 use App\Models\Hpp;
+use App\Models\Cost;
 use Carbon\Carbon;
 use League\CommonMark\Extension\Table\Table;
 use Illuminate\Support\Facades\DB;
@@ -52,55 +53,30 @@ class HppController extends Controller
     public function detail($id)
     {
        
-     
-
         $makanan_detail = Makanan::find($id); 
-        //mengambil banyak data untuk menampilan data sesuai makanan yang dipilih
+        //mengambil banyak resep data untuk menampilan data sesuai makanan yang dipilih
         $resep_detail = Resep::where('makanan_id',$id)->get();
         //mengambil data detail HPP
         $hpp_detail = Hpp::where('makanan_id',$id)->first();
         //mengambil 1 data untuk patokan bahanbaku periode
         $perioderesep = Resep::where('makanan_id',$id)->first();
-        //mengambil update data BOP BTKL untuk list manajemen
-        $btkl = Btkl::where('id',1)->first();
+        
+        //mengambil data BOP
         $bop = Bop::where('id',1)->first();
-        $bop2 = Bop::where('id',2)->first();
-        // array untuk harga bahan 
-        // foreach ($resep_detail as $p) {
-        //      $harga[] = $p->bahan->harga ;  
-        // };
-
-        // menampilkan perhitungan harga bahan baku * qty dalam array []
-        // foreach ($resep_detail as $p) {
-        //     $qty[] = $p->qty;
-        // };
-        // $bahanqty = [];
-        // foreach($qty as $i=>$val){
-        // array_push($bahanqty, $qty[$i] * $harga[$i]);
-        // }
-
-        //buat array untuk menggabungkan semua data untuk menampilkan kumpulan dari array 
-        $results=array();
-        foreach($resep_detail as $key=>$data)
-         {
-            $tabel=array();
-            $tabel['nama_bahan']=$data->bahan->nama_bahan;
-            $tabel['unit']=$data->bahan->satuan;
-            $tabel['qty']=$data->qty;
-            $tabel['price']=$data->bahan->harga;
-            // $tabel['hargaqty']=$bahanqty[$key];
-            $results[]=$tabel;
-        }
-
+        //mengambil data BTKL
+        $btkl = Btkl::where('id',1)->first();
+        //mengambil data cost
+        $cost = Cost::where('id',1)->first();
+    
         $data = [
             'title' => 'Detail Makanan',
             'makanan_detail' => $makanan_detail,
             'hpp_detail' => $hpp_detail,
-            'bahan_makanan' => $results,
+            'bahan_makanan' => $resep_detail,
             'perioderesep' => $perioderesep,
             'btkl' => $btkl,
             'bop' => $bop,
-            'bop2' => $bop2,
+            'cost' => $cost,
             'resep' => $this->resep,
             'hpp' =>  $this->hpp
         ];
@@ -129,8 +105,7 @@ class HppController extends Controller
         
         $request->validate([
             'kd_makanan' => 'required',
-            // 'qty'  => 'required|array|min:3',
-            // 'qty.*'  => 'required|numeric'
+            'qty.*'  => 'required|numeric'
         ]);
         $kd_bahan = $request->kd_bahan;
         $qty = $request->qty;
@@ -148,53 +123,44 @@ class HppController extends Controller
         }
 
         //mengambil data bahan berdasarkan resep untuk menghitung bahan
-        $b = Resep::where('makanan_id',$kd_makanan)->get();
+        $res = Resep::where('makanan_id',$kd_makanan)->get();
         //mengambil data BOP granitur
-        $bo1 = Bop::where('id',1)->first();
-        $bo2 = Bop::where('id',2)->first();
+        $bop = Bop::where('id',1)->first();
         //mengambil data BTKL
         $btkl = Btkl::where('id',1)->first();
+        //mengambil data cost
+        $cost = Cost::where('id',1)->first();
         //mengambil array untuk mengambil data harga 
-        foreach ($b as $p) {
+        foreach ($res as $p) {
              $harga[] = $p->bahan->harga ;  
         };
-        //Total dari penjumlahan (harga satuan bahan * qty)
+        //BahanBaku(harga satuan bahan * qty)
         $totalbahanqty = 0;
         foreach($harga AS $k=>$v){
           $totalbahanqty += $v*$qty[$k];
         }
-        //BTKL untuk laporan per 1 makanan
-        $besaran_btkl = $btkl->besaran;
-        $totalbtkl = $besaran_btkl*1;
+        //BTKL 
+        $totalbtkl = $btkl->besaran;
         //BOP GARNITURES & OTHER 
-        $besaran_bo1 = $bo1->besaran;
-        $totalgranitures =($besaran_bo1/100)*$totalbahanqty;
-        //BOP sales Price
-        $besaran_bo2 = $bo2->besaran;
-        $cost_perportion = $totalbahanqty +$totalgranitures;
-        $totalsales_price =($besaran_bo2/100) * $cost_perportion;
-        //total BOP
-        $totalbop =  $totalgranitures + $totalsales_price;
+        $besaran_bop = $bop->besaran;
+        $totalbop =($besaran_bop/100)*$totalbahanqty;
         //total hpp
         $total_hpp = $totalbahanqty + $totalbtkl + $totalbop;
-        //hitung harga jual
-        $jual = $total_hpp+$total_hpp*0.7;
-        $juall = $jual*1.21;
-        $jualll = round($juall);
-        //simpan ke database
+        //Cost Percentace sales Price
+        $besaran_cost = $cost->besaran;
+        $h_jual = ($total_hpp/$besaran_cost)*100;
+        $h_jual_final = $h_jual*1.21;
+      
         $hpp = Hpp::create([
             'makanan_id' => $kd_makanan,
-            'btkl_id' => $btkl->id,
-            'bop1_id' => $bo1->id,
-            'bop2_id' => $bo2->id,
             'besaran_btkl' => $btkl->besaran,
-            'besaran_bop1' => $bo1->besaran,
-            'besaran_bop2' => $bo2->besaran,
+            'besaran_bop' => $bop->besaran,
+            'besaran_cost' => $cost->besaran,
             'total_bahan' => $totalbahanqty,
             'total_btkl' => $totalbtkl,
             'total_bop' => $totalbop,
             'total_hpp' => $total_hpp,
-            'h_jual' => $jualll,
+            'h_jual' => $h_jual_final,
             'created_at' => $date
     ]);
     //update status untuk makanan yang sudah di input hppnya
@@ -283,38 +249,29 @@ class HppController extends Controller
     {
     
         $makanan_detail = Makanan::find($id); 
-        //mengambil banyak data untuk menampilan data sesuai makanan yang dipilih
+        //mengambil banyak resep data untuk menampilan data sesuai makanan yang dipilih
         $resep_detail = Resep::where('makanan_id',$id)->get();
         //mengambil data detail HPP
         $hpp_detail = Hpp::where('makanan_id',$id)->first();
         //mengambil 1 data untuk patokan bahanbaku periode
         $perioderesep = Resep::where('makanan_id',$id)->first();
-        //mengambil update data BOP BTKL untuk list manajemen
-        $btkl = Btkl::where('id',1)->first();
+        
+        //mengambil data BOP
         $bop = Bop::where('id',1)->first();
-        $bop2 = Bop::where('id',2)->first();
+        //mengambil data BTKL
+        $btkl = Btkl::where('id',1)->first();
+        //mengambil data cost
+        $cost = Cost::where('id',1)->first();
     
-        //buat array untuk menggabungkan semua data untuk menampilkan kumpulan dari array 
-        $results=array();
-        foreach($resep_detail as $key=>$data)
-         {
-            $tabel=array();
-            $tabel['nama_bahan']=$data->bahan->nama_bahan;
-            $tabel['unit']=$data->bahan->satuan;
-            $tabel['qty']=$data->qty;
-            $tabel['price']=$data->bahan->harga;
-            $results[]=$tabel;
-        }
-
         $data = [
             'title' => 'Detail Makanan',
             'makanan_detail' => $makanan_detail,
             'hpp_detail' => $hpp_detail,
-            'bahan_makanan' => $results,
+            'bahan_makanan' => $resep_detail,
             'perioderesep' => $perioderesep,
             'btkl' => $btkl,
             'bop' => $bop,
-            'bop2' => $bop2,
+            'cost' => $cost,
             'resep' => $this->resep,
             'hpp' =>  $this->hpp
         ];
@@ -327,41 +284,33 @@ class HppController extends Controller
     public function cetak_hppmakanan_pdf($id)
     {
         $makanan_detail = Makanan::find($id); 
-        //mengambil banyak data untuk menampilan data sesuai makanan yang dipilih
+        //mengambil banyak resep data untuk menampilan data sesuai makanan yang dipilih
         $resep_detail = Resep::where('makanan_id',$id)->get();
         //mengambil data detail HPP
         $hpp_detail = Hpp::where('makanan_id',$id)->first();
         //mengambil 1 data untuk patokan bahanbaku periode
         $perioderesep = Resep::where('makanan_id',$id)->first();
-        //mengambil update data BOP BTKL untuk list manajemen
-        $btkl = Btkl::where('id',1)->first();
+        
+        //mengambil data BOP
         $bop = Bop::where('id',1)->first();
-        $bop2 = Bop::where('id',2)->first();
-
-        //buat array untuk menggabungkan semua data untuk menampilkan kumpulan dari array 
-        $results=array();
-        foreach($resep_detail as $key=>$data)
-         {
-            $tabel=array();
-            $tabel['nama_bahan']=$data->bahan->nama_bahan;
-            $tabel['unit']=$data->bahan->satuan;
-            $tabel['qty']=$data->qty;
-            $tabel['price']=$data->bahan->harga;
-            $results[]=$tabel;
-        }
-
+        //mengambil data BTKL
+        $btkl = Btkl::where('id',1)->first();
+        //mengambil data cost
+        $cost = Cost::where('id',1)->first();
+    
         $data = [
             'title' => 'Detail Makanan',
             'makanan_detail' => $makanan_detail,
             'hpp_detail' => $hpp_detail,
-            'bahan_makanan' => $results,
+            'bahan_makanan' => $resep_detail,
             'perioderesep' => $perioderesep,
             'btkl' => $btkl,
             'bop' => $bop,
-            'bop2' => $bop2,
+            'cost' => $cost,
             'resep' => $this->resep,
             'hpp' =>  $this->hpp
         ];
+
   
         // instantiate and use the dompdf class
 

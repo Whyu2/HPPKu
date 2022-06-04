@@ -33,9 +33,7 @@
   </head>
 <body onload="window.print();">
   @php
-  $tot_bahan = $resep->totalbahan($makanan_detail->id);
-  $tot_garnitur = $hpp->totalgarnitur($makanan_detail->id);
-  $tot_sales = $hpp->totalsales($makanan_detail->id);
+ $tot_bahan = $resep->totalbahan($makanan_detail->id);
   @endphp
 <div class="wrapper mt-3">
   <!-- Main content -->
@@ -94,65 +92,60 @@
                         <thead>
                         <tbody> 
    
-                        <?php $number=1; ?>
-                        @foreach ($bahan_makanan as $key => $bahan_makanans)
-                            <tr>
-                              <td>{{$bahan_makanans['nama_bahan']}}</td>
-                              <td  class=" text-center">{{$bahan_makanans['unit']}}</td>
-                              <td class=" text-center">{{$bahan_makanans['qty']}}</td>
-                              <td  class=" text-center">{{$bahan_makanans['price']}}</td>
-                              @php 
-                              $tot_bahan_qty = $hpp->bahanqty($bahan_makanans['qty'],$bahan_makanans['price'] );
-                            @endphp
-                            <td  class=" text-center">{{$tot_bahan_qty}}</td>
-                              <?php $number++; ?>
-                            </tr>
-                            
-               
-                            @endforeach
-                            <tr>
-                              <th colspan="3">Total Bahan</th>
-                              <td  class=" text-center">{{$tot_bahan}}</td>
-                              <th  class=" text-center">{{($hpp_detail->total_bahan)}}</th>
-                            </tr>
-                            <tr>
-                              <td colspan="3">{{$hpp_detail->btkl->nama_btkl}} {{formatIDR($hpp_detail->besaran_btkl)}}/PCS</td>
-                              <td  class=" text-center"></td>
-                              <td  class=" text-center">{{($btkl->besaran)}}</td>
-                            </tr>
-                            <tr>
-                              <th colspan="3" >Total BTKL</th>
-                              <td  class="text-center"></td>
-                              <th  class=" text-center">{{$hpp_detail->total_btkl}}</th>
-                            </tr>
-                            <tr>
-                              <td colspan="3">{{$bop->nama_bop}} ({{$hpp_detail->besaran_bop1}}%)</td>
-                              <td  class=" text-center"></td>
-                              <td  class=" text-center">{{$tot_garnitur}}</td>
-                            </tr>
-                            <tr>
-                              <td colspan="3">{{$bop2->nama_bop}} ({{$hpp_detail->besaran_bop2}}%)</td>
-                              <td  class=" text-center"></td>
-                              <td  class=" text-center">{{$tot_sales}}</td>
-                            </tr>
+                          <?php $number=1; ?>
+                          @foreach ($bahan_makanan as $bahan_makanans)
+                              <tr>
+                                <td>{{$bahan_makanans->bahan->nama_bahan}}</td>
+                                <td  class=" text-center">{{$bahan_makanans->bahan->satuan}}</td>
+                                <td class=" text-center">{{$bahan_makanans->qty}}</td>
+                                <td  class=" text-center">{{$bahan_makanans->bahan->harga}}</td>
+                                @php 
+                                  $tot_bahan_qty = $hpp->bahanqty($bahan_makanans->qty,$bahan_makanans->bahan->harga );
+                                @endphp
+                                <td  class=" text-center">{{$tot_bahan_qty}}</td>
+                                <?php $number++; ?>
+                              </tr>
+                              
+                 
+                              @endforeach
+                              <tr>
+                                <th colspan="3">Total Bahan</th>
+                                <td  class=" text-center">{{$tot_bahan}}</td>
+                                <th  class=" text-center">{{($hpp_detail->total_bahan)}}</th>
+                              </tr>
+                              <tr>
+                                <td colspan="3">{{$btkl->nama_btkl}} {{formatIDR($hpp_detail->besaran_btkl)}}/PCS</td>
+                                <td  class=" text-center"></td>
+                                <td  class=" text-center">{{($btkl->besaran)}}</td>
+                              </tr>
+                              <tr>
+                                <th colspan="3" >Total BTKL</th>
+                                <td  class="text-center"></td>
+                                <th  class=" text-center">{{$hpp_detail->total_btkl}}</th>
+                              </tr>
+                              <tr>
+                                <td colspan="3">{{$bop->nama_bop}} ({{$hpp_detail->besaran_bop}}%)</td>
+                                <td  class=" text-center"></td>
+                                <td  class=" text-center">{{$hpp_detail->total_bop}}</td>
+                              </tr>
+                        
+                              <tr>
+                                <th colspan="3">Total Overhead</th>
+                                <td  class=" text-center"></td>
+                                <th  class=" text-center">{{$hpp_detail->total_bop}}</th>
+                              </tr>
+                              <tr>
+                                <th colspan="3">Harga Pokok Produksi</th>
+                                <td  class=" text-center"></td>
+                                <td  class=" text-center"><b>{{$hpp_detail->total_hpp}}<b></td>
+                              </tr>
+                              <tr>
+                                <td colspan="3"> <b>Harga Jual</b> (HPP / Cost Precentace * 1,21)  </td>
+                                <td  class=" text-center"></td>
+                                <td  class=" text-center"><b>{{$hpp_detail->h_jual}}<b></td>
+                              </tr>
                       
-                            <tr>
-                              <th colspan="3">Total Overhead</th>
-                              <td  class=" text-center"></td>
-                              <th  class=" text-center">{{$hpp_detail->total_bop}}</th>
-                            </tr>
-                            <tr>
-                              <th colspan="3">Harga Pokok Produksi</th>
-                              <td  class=" text-center"></td>
-                              <td  class=" text-center"><b>{{$hpp_detail->total_hpp}}<b></td>
-                            </tr>
-                            <tr>
-                              <td colspan="3"> <b>Harga Jual</b> (HPP + (70% HPP) * 1,21)  </td>
-                              <td  class=" text-center"></td>
-                              <td  class=" text-center"><b>{{$hpp_detail->h_jual}}<b></td>
-                            </tr>
-                            
-                          </tbody>
+                            </tbody>
                     </table>
                     <table class="table table-bordered ">
                     <thead>

@@ -716,6 +716,20 @@ data-bs-parent="#sidenavAccordion"
         })
       })
     })
+    $(function(){
+      $('#replyNumber').on('change',function(){
+        let qtya = $('#replyNumber').val();
+      
+        $.ajax({
+          success: function(msg){
+            $("#outtqty").val(qtya);
+          },
+          error: function(data){
+          console.log('error:', data);
+          },
+        })
+      })
+    })
   });
 
   

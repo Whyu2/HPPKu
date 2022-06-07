@@ -146,6 +146,7 @@ class HppController extends Controller
         $totalbop =($besaran_bop/100)*$totalbahanqty;
         //total hpp
         $total_hpp = $totalbahanqty + $totalbtkl + $totalbop;
+  
         //Cost Percentace sales Price
         $besaran_cost = $cost->besaran;
         $h_jual = ($total_hpp/$besaran_cost)*100;

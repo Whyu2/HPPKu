@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use EveentMakanan;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -39,54 +40,19 @@ class Eveent_makanan extends Model
                 $result =   array_sum($qty);
                 return $result;
     }
+    //menghitung total bahan berdasarkan Qty
+    public function total_qty ($id_bahan, $qty){
+        $bahan = Resep::where('bahan_id', $id_bahan)->first();
+        $qtyy_bahan = sprintf('%g',$bahan->qty); 
+        $result = $qtyy_bahan * $qty ;
+        return $result;
+    }
     //menghitung jumlah totalHPP
-    public function totalhpp ($id_eveent = null)
-    {
-         $m = Eveent_makanan::where('eveent_id',$id_eveent)->get();
-           //ambil array qty
-           foreach ($m as $q) {
-            $qty[] = $q->qty;
-            };
 
-        //ambil array bahanbaku
-
-     foreach ($m as $p) {
-                $hpp[] = $p->hpp->total_hpp ;  
-                };
-            // ambil array hpp
-            foreach ($m as $p) {
-                $hpp[] = $p->hpp->total_hpp ;  
-                };
-         //ambil array hpp * qty
-                $hpp_qty = [];
-                foreach($qty as $i=>$val){
-                array_push($hpp_qty, $qty[$i] * $hpp[$i]);
-                }
-                // hitung total hpp
-                $result =   array_sum($hpp_qty);
-                return $result;
-    }
         //menghitung jumlah jual*QTY
-    public function totalqtyjual ($id_eveent = null)
-    {
-         $m = Eveent_makanan::where('eveent_id',$id_eveent)->get();
-         
-             //ambil array qty
-             foreach ($m as $q) {
-                $qty[] = $q->qty;
-                };
-            //ambil array harga jual 
-                foreach ($m as $p) {
-                    $jual[] = $p->hpp->h_jual ;  
-                    };
-                //hitung total harga jual * qty
-               $jual_qty = [];
-               foreach($qty as $i=>$val){
-               array_push($jual_qty, $qty[$i] * $jual[$i]);
-               }
-                $result =   array_sum($jual_qty);
-                return $result;
-    }
+   
+    //hitung total qty berdasarkan jumlah porsi
+  
 
     
 }

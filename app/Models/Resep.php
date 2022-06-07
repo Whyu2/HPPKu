@@ -35,6 +35,11 @@ class Resep extends Model
        $result =   array_sum($harga);
        return $result;
     }
+
+    public function listbahan($id_hpp = null){
+        $result = Resep::where('makanan_id',$id_hpp)->get();
+        return $result;
+    }
   
 
 }

@@ -67,9 +67,20 @@
                           @endforeach
                         </select>
                         </div>
+                        <div class="col-2 ">
+               
+                          <label> Pax/Porsi</label>
+                          {{-- <input type="text" class="form-control" name="qtya" id="qtya"  placeholder="Masukkan Nama Event" required> --}}
+                          <input type="number" id="replyNumber" min="0" data-bind="value:replyNumber"   name="qtya" class="form-control" required>
+                          @error('qty')
+                          <div class="invalid-feedback d-block">
+                          Jumlah QTY harus disi
+                          </div>
+                          @enderror
+                    
+              
+                      </div>
                         <div class="row">
-
-                     
                         <div class="col-8 mb-2  ">
                           <label for="exampleInputEmail1 mb-2">Nama Event</label>
                           <input type="text" class="form-control" name="nama_event" id="nama"  placeholder="Masukkan Nama Event" required>
@@ -98,6 +109,7 @@
                     <input type="hidden" id="outnama" name="nama_event">
                     <input type="hidden" id="outtglmulai" name="tgl_mulai">
                     <input type="hidden" id="outtglselesai" name="tgl_selesai">
+                    <input type="hidden" id="outtqty" name="qty">
                     <div class="control-group  after-add-more">
                       <div class="row">
                         <div class="col-sm-7">
@@ -116,7 +128,7 @@
                       </div>
                       @enderror
                         </div>
-                        <div class="col-sm-2">
+                        {{-- <div class="col-sm-2">
                        <label>QTY</label>
                        <input type="number" id="replyNumber" min="0" data-bind="value:replyNumber"  name="qty[]" class="form-control" id="qty" required>
                           @error('qty[]')
@@ -124,7 +136,7 @@
                           Jumlah QTY harus disi
                           </div>
                           @enderror
-                        </div>
+                        </div> --}}
                         <div class="col-sm-3 mt-4"> 
                           <button class="btn btn-success add-more" type="button"><i class="fas fa-plus"></i></button>
                            </div>                
@@ -153,11 +165,11 @@
                                 @endforeach
                              </select>
                              </div>
-                             <div class="col-sm-2">
+                             {{-- <div class="col-sm-2">
                             <label>QTY</label>
                             <input type="number" id="replyNumber" min="0" data-bind="value:replyNumber"  name="qty[]" class="form-control" id="qty" required>
                             
-                             </div>
+                             </div> --}}
                              {{-- <div class="col-sm-2 mt-4">
                               <div id="out2">
                                 <input class="form-control" type="text" name="kd_makanan[]">
@@ -217,10 +229,11 @@
                             <th>Kode</th>
                             <th>Nama Event</th>
                             <th>Waktu</th>
+                            <th>Tanggal</th>
+                            <th>Lama</th>
                             <th>Jumlah Menu</th>
-                            <th>Jumlah Porsi</th>
-                            <th>Mulai</th>
-                            <th>Selesai</th>
+                            <th>Jumlah Pax/Porsi</th>
+                          
                           </tr>
                         </thead>
                         <tfoot>
@@ -229,10 +242,11 @@
                        
                             <th>Nama Event</th>
                             <th>Waktu</th>
+                            <th>Tanggal</th>
+                            <th>Lama</th>
                             <th>Jumlah Menu</th>
-                            <th>Jumlah Porsi</th>
-                            <th>Mulai</th>
-                            <th>Selesai</th>
+                            <th>Jumlah Pax/Porsi</th>
+                          
                           </tr>
                         </tfoot>
                         <tbody>
@@ -244,13 +258,22 @@
                                 <td>{{$lists->kd_event}}</td>
                                 <td ><a href="{{route('detaile',$lists->id)}}">{{$lists->nama_event}}</a></td>
                                 <td >{{$lists->waktu->nama_waktu}}</td>
+                                <td>
+                                  @if($lists->tgl_mulai == $lists->tgl_selesai )
+                                  {{formatDate($lists['tgl_mulai'])}}
+                                  @else
+                                  {{formatDate($lists['tgl_mulai'])}} - {{formatDate($lists['tgl_selesai'])}} 
+                                  @endif
+                                </td>
+                      
                                @php
+                                $lama = $event->lamaevent($lists['tgl_mulai'],$lists['tgl_selesai']);
                                 $jmlh_menu = $eveent_makanan->jumlahmenu($lists->id);
                                @endphp
+                                    <td>{{$lama}} Hari</td>
                                 <td class="text-center">{{$jmlh_menu->total}}</td>
-                                <td class="text-center">{{$lists->total_porsi}}</td>
-                                <td class="">{{formatDate($lists->tgl_mulai)}}</td>
-                                <td class="">{{formatDate($lists->tgl_selesai)}}</td>
+                                <td class="text-center">{{$lists->porsi}}</td>
+                            
                                 <?php $number++; ?>
                               </tr>
                               @endforeach

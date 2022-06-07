@@ -7,6 +7,9 @@ use App\Models\Eveent_makanan;
 use App\Models\Hpp;
 use App\Models\Resep;
 use App\Models\Waktu;
+use App\Models\Btkl;
+use App\Models\Bop;
+use App\Models\Cost;
 use App\Models\Makanan;
 use Eveent as GlobalEveent;
 use Illuminate\Http\Request;
@@ -28,6 +31,7 @@ class EventController extends Controller
         $this->hpp = new HPP();
         $this->eveent_makanan = new Eveent_makanan();
         $this->eveent = new Eveent();
+        $this->resep = new Resep();
     }
     public function home()
     {
@@ -48,6 +52,7 @@ class EventController extends Controller
             'waktu' =>  $waktu,
             'hpp' =>  $hpp,
             'list' =>  $l,
+            'event' =>$this->eveent,
             'eveent_makanan' => $eveent_makanan,
             'date'=> $d,
         
@@ -82,7 +87,8 @@ class EventController extends Controller
        //insert deskripsi event
         $tgl_mulai = date('Y-m-d H:i:s', strtotime($request->tgl_mulai));
         $tgl_selesai = date('Y-m-d H:i:s', strtotime($request->tgl_selesai));
-
+        $days =   $this->eveent->lamaevent($tgl_mulai,$tgl_selesai);
+        
         $events = Eveent::create([
             'waktu_id' => $request->id_waktu,
             'kd_event' => $addkode,
@@ -94,6 +100,13 @@ class EventController extends Controller
 
         //mengambil id event untuk di masukkan ke database eveent_makanan   
          $ke = Eveent::where('kd_event', $addkode)->first();
+        //mengambil data BTKL
+        $btkl = Btkl::where('id',1)->first();
+        //mengambil data BOP granitur
+        $bop = Bop::where('id',1)->first();
+         //mengambil data cost
+         $cost = Cost::where('id',1)->first();
+        
        //insert daftar makanan (yang sudah dihitung hppnya)
          $hpp_id = $request->hpp_id;
          $qty = $request->qty;
@@ -102,26 +115,60 @@ class EventController extends Controller
                 $save = [
                 'eveent_id' => $ke->id,
                 'hpp_id' => $hpp_id[$i],
-                'qty' => $qty[$i],
+                'qty' => $qty,
             ];
             DB::table('eveent_makanans')->insert($save);
         }
-
-        //perhitungan untuk menentukan total produksi, jual berdasarkan lama event
-        $days =   $this->eveent->lamaevent($ke->tgl_mulai,$ke->tgl_selesai);
         //jumlah porsi
         $tot_porsi = $this->eveent_makanan->totalqty($ke->id);
-        //total hpp * lama event
-        $tot_hpp = $this->eveent_makanan->totalhpp($ke->id);
-        $tot_hpp_day= $tot_hpp * $days;
-        //total jual * lama event
-        $tot_jual = $this->eveent_makanan->totalqtyjual($ke->id);
-        $tot_jual_day= $tot_jual * $days;
+        //menghitung total bahan sesuai dengan porsi makanan
+        $m = Eveent_makanan::where('eveent_id',$ke->id)->get();
+        foreach ($m as $p) {
+            $qty = $p->qty ;
+            //memanggil fuction untuk array bahan bakunya
+            $listbahan =  $this->resep->listbahan($p->hpp->makanan->id);  
+            foreach ($listbahan as $b){
+                //memanggil fuction untuk mengkalikan qty pada bahan sesuai jumlah porsi  
+                $tot_qty = $this->eveent_makanan->total_qty($b->bahan->id, $qty);
+                //memanggil fuction untuk mengkalikan total qty dengan harga satuan bahanbaku   
+                $tot_bahan_qty[] = $this->hpp->bahanqty($tot_qty,$b->bahan->harga );
+            }
+       };
+       //penjumlahan total array
+       $total_bahan = array_sum($tot_bahan_qty);
+       //Besaran BTKL
+       $btkl = $btkl->besaran;
+       $total_btkl = $tot_porsi * $btkl;
+        //Besaran BOP
+       $besaran_bop = $bop->besaran;
+       $total_overhead =($besaran_bop/100)*$total_bahan;
+       //Total HPP
+       $total_hpp = $total_bahan + $total_btkl + $total_overhead;
+       //Besaran HPP perporsi
+       $biaya_perporsi = $total_hpp/ $tot_porsi;
+        //Besaran Cost 
+       $besaran_cost = $cost->besaran;
+        //Harga jual
+       $h_jual = ($biaya_perporsi/$besaran_cost)*100;
+       $harga_jual_perporsi = $h_jual*1.21;
+        //perhitungan untuk menentukan total produksi, jual berdasarkan lama event
+        $days =   $this->eveent->lamaevent($ke->tgl_mulai,$ke->tgl_selesai);
+        //harga jual dikalikan porsi
+        $rev =  $harga_jual_perporsi*$tot_porsi;
+        //total jual dikurangi hpp
+        $revv = $rev - $total_hpp;
+        //revenue dikalikan dengan lama event
+        $revenue = $revv * $days;
         $event_save = Eveent::whereId($ke->id)->first();
         $event_save->update([
-            'total_porsi' => $tot_porsi,
-            'total_produksi' =>$tot_hpp_day,
-            'total_jual' => $tot_jual_day
+            'total_bahan' => $total_bahan,
+            'total_btkl' => $total_btkl,
+            'total_bop' => $total_overhead,
+            'porsi' => $tot_porsi,
+            'total_produksi' => $total_hpp,
+            'total_produksi_p' => $biaya_perporsi,
+            'h_jual_p' => $harga_jual_perporsi,
+            'revenue' => $revenue,
         ]);
         //insert data detail hpp
         return redirect('/event')->with('tambah', 'Data Event, Berhasil Ditambah!');
@@ -140,53 +187,23 @@ class EventController extends Controller
         $m = Eveent_makanan::where('eveent_id',$id)->get();
         //lama event
         $days = $this->eveent->lamaevent($detail->tgl_mulai,$detail->tgl_selesai);
-
-                 //ambil array hpp
-                foreach ($m as $p) {
-                $hpp[] = $p->hpp->total_hpp ;  
-                };
-                //ambil array harga jual
-                foreach ($m as $p) {
-                $jual[] = $p->hpp->h_jual ;  
-                };
-       
-                //ambil array qty
-                foreach ($m as $q) {
-                $qty[] = $q->qty;
-                };
-                //proses perhitungan * qty
-               //hpp*qty
-               $hpp_qty = [];
-               foreach($qty as $i=>$val){
-               array_push($hpp_qty, $qty[$i] * $hpp[$i]);
-               }
-
-                //harga jual*qty
-               $jual_qty = [];
-               foreach($qty as $i=>$val){
-               array_push($jual_qty, $qty[$i] * $jual[$i]);
-               }
-               $results=array();
-               //menggabungkan array
-               foreach($m as $key=>$data)
-                {
-                   $tabel=array();
-                   $tabel['nama_makanan']=$data->hpp->makanan->nama_makanan;
-                   $tabel['id_makanan']=$data->hpp->makanan->id;
-                   $tabel['qty']=$data->qty;
-                   $tabel['total_btkl']=$data->hpp->total_btkl;
-                   $tabel['total_hpp']=$data->hpp->total_hpp;
-                   $tabel['total_jual']=$data->hpp->h_jual;
-                   $tabel['hpp_qty']=$hpp_qty[$key];
-                   $tabel['jual_qty']=$jual_qty[$key];
-                   $results[]=$tabel;
-               }
+        //mengambil data BOP
+        $bop = Bop::where('id',1)->first();
+        //mengambil data BTKL
+        $btkl = Btkl::where('id',1)->first();
+        //mengambil data cost
+        $cost = Cost::where('id',1)->first();
         $data = [
             'title' => 'Detail Event',
             'detail' => $detail,
-            'hpps' => $results,
+            'btkl' => $btkl,
+            'bop' => $bop,
+            'cost' => $cost,
+            'hpps' => $m,
             'lama' => $days,
             'event' =>$this->eveent,
+            'hpp' =>$this->hpp,
+            'resep' =>$this->resep,
             'eveent_makanan' => $this->eveent_makanan
         ];
         return view('home.user.event_detail', $data);
@@ -238,53 +255,23 @@ class EventController extends Controller
         $m = Eveent_makanan::where('eveent_id',$id)->get();
         //lama event
         $days = $this->eveent->lamaevent($detail->tgl_mulai,$detail->tgl_selesai);
-
-                 //ambil array hpp
-                foreach ($m as $p) {
-                $hpp[] = $p->hpp->total_hpp ;  
-                };
-                //ambil array harga jual
-                foreach ($m as $p) {
-                $jual[] = $p->hpp->h_jual ;  
-                };
-       
-                //ambil array qty
-                foreach ($m as $q) {
-                $qty[] = $q->qty;
-                };
-                //proses perhitungan * qty
-               //hpp*qty
-               $hpp_qty = [];
-               foreach($qty as $i=>$val){
-               array_push($hpp_qty, $qty[$i] * $hpp[$i]);
-               }
-
-                //harga jual*qty
-               $jual_qty = [];
-               foreach($qty as $i=>$val){
-               array_push($jual_qty, $qty[$i] * $jual[$i]);
-               }
-               $results=array();
-               //menggabungkan array
-               foreach($m as $key=>$data)
-                {
-                   $tabel=array();
-                   $tabel['nama_makanan']=$data->hpp->makanan->nama_makanan;
-                   $tabel['id_makanan']=$data->hpp->makanan->id;
-                   $tabel['qty']=$data->qty;
-                   $tabel['total_btkl']=$data->hpp->total_btkl;
-                   $tabel['total_hpp']=$data->hpp->total_hpp;
-                   $tabel['total_jual']=$data->hpp->h_jual;
-                   $tabel['hpp_qty']=$hpp_qty[$key];
-                   $tabel['jual_qty']=$jual_qty[$key];
-                   $results[]=$tabel;
-               }
+        //mengambil data BOP
+        $bop = Bop::where('id',1)->first();
+        //mengambil data BTKL
+        $btkl = Btkl::where('id',1)->first();
+        //mengambil data cost
+        $cost = Cost::where('id',1)->first();
         $data = [
             'title' => 'Detail Event',
             'detail' => $detail,
-            'hpps' => $results,
+            'btkl' => $btkl,
+            'bop' => $bop,
+            'cost' => $cost,
+            'hpps' => $m,
             'lama' => $days,
             'event' =>$this->eveent,
+            'hpp' =>$this->hpp,
+            'resep' =>$this->resep,
             'eveent_makanan' => $this->eveent_makanan
         ];
         return view('cetak.cetak_eventorder', $data);
@@ -295,53 +282,23 @@ class EventController extends Controller
         $m = Eveent_makanan::where('eveent_id',$id)->get();
         //lama event
         $days = $this->eveent->lamaevent($detail->tgl_mulai,$detail->tgl_selesai);
-
-                 //ambil array hpp
-                foreach ($m as $p) {
-                $hpp[] = $p->hpp->total_hpp ;  
-                };
-                //ambil array harga jual
-                foreach ($m as $p) {
-                $jual[] = $p->hpp->h_jual ;  
-                };
-       
-                //ambil array qty
-                foreach ($m as $q) {
-                $qty[] = $q->qty;
-                };
-                //proses perhitungan * qty
-               //hpp*qty
-               $hpp_qty = [];
-               foreach($qty as $i=>$val){
-               array_push($hpp_qty, $qty[$i] * $hpp[$i]);
-               }
-
-                //harga jual*qty
-               $jual_qty = [];
-               foreach($qty as $i=>$val){
-               array_push($jual_qty, $qty[$i] * $jual[$i]);
-               }
-               $results=array();
-               //menggabungkan array
-               foreach($m as $key=>$data)
-                {
-                   $tabel=array();
-                   $tabel['nama_makanan']=$data->hpp->makanan->nama_makanan;
-                   $tabel['id_makanan']=$data->hpp->makanan->id;
-                   $tabel['qty']=$data->qty;
-                   $tabel['total_btkl']=$data->hpp->total_btkl;
-                   $tabel['total_hpp']=$data->hpp->total_hpp;
-                   $tabel['total_jual']=$data->hpp->h_jual;
-                   $tabel['hpp_qty']=$hpp_qty[$key];
-                   $tabel['jual_qty']=$jual_qty[$key];
-                   $results[]=$tabel;
-               }
+        //mengambil data BOP
+        $bop = Bop::where('id',1)->first();
+        //mengambil data BTKL
+        $btkl = Btkl::where('id',1)->first();
+        //mengambil data cost
+        $cost = Cost::where('id',1)->first();
         $data = [
             'title' => 'Detail Event',
             'detail' => $detail,
-            'hpps' => $results,
+            'btkl' => $btkl,
+            'bop' => $bop,
+            'cost' => $cost,
+            'hpps' => $m,
             'lama' => $days,
             'event' =>$this->eveent,
+            'hpp' =>$this->hpp,
+            'resep' =>$this->resep,
             'eveent_makanan' => $this->eveent_makanan
         ];
        

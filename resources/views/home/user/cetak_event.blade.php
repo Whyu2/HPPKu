@@ -51,15 +51,15 @@
                   </div>
                   <thead>
                     <tr>
-                      <th>No</th>                  
+                      <th>No</th>
                       <th>Nama Event</th>
                       <th>KD Event</th>
                       <th>Tanggal</th>
-                      <th>Lama Event</th>
-                      <th>Total Biaya Produksi</th>
-                      <th>Harga Jual</th>
-                      <th>Gross Profit</th>
-                    
+                      <th>Lama</th>
+                      <th>Porsi/Pax</th>
+                      <th>Penjualan</th>
+                      <th>Biaya Produksi</th>
+                      <th>Revenue</th>
                     </tr>
                   </thead>
                   <tfoot>
@@ -68,10 +68,11 @@
                       <th>Nama Event</th>
                       <th>KD Event</th>
                       <th>Tanggal</th>
-                      <th>Lama Event</th>
-                      <th>Total Biaya Produksi</th>
-                      <th>Harga Jual</th>
-                      <th>Gross Profit</th>
+             <th>Lama</th>
+             <th>Porsi/Pax</th>
+                      <th>Penjualan</th>
+                      <th>Biaya Produksi</th>
+                      <th>Revenue</th>
                     
                     </tr>
                   </tfoot>
@@ -83,15 +84,24 @@
               
                     <td><a href="{{route('detaile',$lists['id'])}}">{{$lists['nama_event']}}</a></td>
                     <td>{{$lists['kd_event']}}</td>
-                    <td>{{$lists['tgl_mulai']}} - {{$lists['tgl_selesai']}}</td>
+                    <td>
+                      @if($lists['tgl_mulai'] == $lists['tgl_selesai'] )
+                      {{formatDate($lists['tgl_mulai'])}}
+                      @else
+                      {{formatDate($lists['tgl_mulai'])}} - {{formatDate($lists['tgl_selesai'])}} 
+                      @endif
+                    </td>
                     @php
                    $lama = $event->lamaevent($lists['tgl_mulai'],$lists['tgl_selesai']);
-                   $grost_profit = $event->grost($lists['total_jual'],$lists['total_produksi']);
+                  $tot_jual = $event->tot_jual( $lists['h_jual_p'],$lists['porsi']);  
+                             
                     @endphp
                     <td>{{$lama}} Hari</td>
-                    <td>{{formatIDR($lists['total_produksi'])}}</td>
-                    <td>{{formatIDR($lists['total_jual'])}}</td>
-                    <td>{{formatIDR($grost_profit)}}</td>
+                    <td  class="text-center">{{$lists['porsi']}}</td>
+                    <td  class="text-center">{{formatIDR($tot_jual)}}</td>
+                    <td  class="text-center">{{formatIDR($lists['total_produksi'])}}</td>
+           
+                    <td>{{formatIDR($lists['revenue'])}}</td>
                     <?php $number++; ?>
                     </tr>
                     @endforeach

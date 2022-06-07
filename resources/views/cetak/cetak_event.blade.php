@@ -93,14 +93,15 @@
       
                       <thead>
                         <tr>
-                          <th>No</th>                  
+                          <th>No</th>
                           <th>Nama Event</th>
                           <th>KD Event</th>
                           <th>Tanggal</th>
-                          <th>Lama Event</th>
-                          <th>Total Biaya Produksi</th>
-                          <th>Harga Jual</th>
-                          <th>Gross Profit</th>
+                          <th>Lama</th>
+                          <th>Porsi/Pax</th>
+                          <th>Penjualan</th>
+                          <th>Biaya Produksi</th>
+                          <th>Revenue</th>
                         
                         </tr>
                       </thead>   
@@ -113,15 +114,24 @@
                   
                         <td>{{$lists['nama_event']}}</td>
                         <td>{{$lists['kd_event']}}</td>
-                        <td>{{$lists['tgl_mulai']}} - {{$lists['tgl_selesai']}}</td>
+                        <td>
+                          @if($lists['tgl_mulai'] == $lists['tgl_selesai'] )
+                          {{formatDate($lists['tgl_mulai'])}}
+                          @else
+                          {{formatDate($lists['tgl_mulai'])}} - {{formatDate($lists['tgl_selesai'])}} 
+                          @endif
+                        </td>
                         @php
                        $lama = $event->lamaevent($lists['tgl_mulai'],$lists['tgl_selesai']);
-                       $grost_profit = $event->grost($lists['total_jual'],$lists['total_produksi']);
+                      $tot_jual = $event->tot_jual( $lists['h_jual_p'],$lists['porsi']);  
+                                 
                         @endphp
                         <td>{{$lama}} Hari</td>
+                        <td>{{$lists['porsi']}}</td>
+                        <td>{{formatIDR($tot_jual)}}</td>
                         <td>{{formatIDR($lists['total_produksi'])}}</td>
-                        <td>{{formatIDR($lists['total_jual'])}}</td>
-                        <td>{{formatIDR($grost_profit)}}</td>
+               
+                        <td>{{formatIDR($lists['revenue'])}}</td>
                         <?php $number++; ?>
                         </tr>
                         @endforeach

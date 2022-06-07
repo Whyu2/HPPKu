@@ -18,9 +18,14 @@ class Eveent extends Migration
             $table->foreignId('waktu_id')->constrained('waktus')->onUpdate('cascade') ->onDelete('cascade');
             $table->char('kd_event', 11);
             $table->char('nama_event', 128);
-            $table->integer('total_porsi')->nullable();
+            $table->integer('total_bahan')->nullable();
+            $table->integer('total_btkl')->nullable();
+            $table->integer('total_bop')->nullable();
+            $table->integer('porsi')->nullable();
             $table->integer('total_produksi')->nullable();
-            $table->integer('total_jual')->nullable();
+            $table->integer('total_produksi_p')->nullable();
+            $table->integer('h_jual_p')->nullable();
+            $table->integer('revenue')->nullable();
             $table->date('tgl_mulai');
             $table->date('tgl_selesai');
             $table->timestamps();

@@ -8,7 +8,7 @@ Digunakan sebagai penentuan harga pokok produksi dan harga jual makanan. Terdapa
 
 ## Screenshot
 
-<details>Login
+<details>
 ![screencapture-127-0-0-1-8000-2022-05-27-13_17_41](https://user-images.githubusercontent.com/69185852/170642044-0d7ad5b2-7d16-4001-a45e-ffa9e15b7381.png)
 </details>
 <details>Home User

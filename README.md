@@ -14,7 +14,7 @@ Login
 Home User
 ![1653633033111](https://user-images.githubusercontent.com/69185852/170643816-34614cd9-0fed-48e8-8ed4-84bab45d894d.png)
 
-Admin
+Home Admin
 ![1653634359896](https://user-images.githubusercontent.com/69185852/170647064-7e6f457b-d203-4d9b-ba68-9c88744b1713.png)
 
 HPP Permakanan

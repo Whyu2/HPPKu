@@ -121,7 +121,7 @@
                                   <td  class=" text-center"><b>{{$hpp_detail->total_hpp}}<b></td>
                                 </tr>
                                 <tr>
-                                  <td colspan="3"> <b>Harga Jual</b> (HPP / Cost Precentace * 1,21) <br>
+                                  <td colspan="3"> <b>Harga Jual</b> (HPP *100 / cost percentage ({{$cost->besaran}}%) * 1,21 )<br>
                                   
                                   </td>
                                   <td  class=" text-center"></td>

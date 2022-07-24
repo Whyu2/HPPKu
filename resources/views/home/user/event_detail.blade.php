@@ -82,7 +82,7 @@
                             @foreach ($hpps as $key => $event_makanan)
                                 <tr>
                                  
-                                  <th colspan="5"><a href="{{route('detail',$event_makanan->hpp->makanan->id)}}">{{$event_makanan->hpp->makanan->nama_makanan}}</a> 
+                                  <th colspan="5"><a href="{{route('detail',$event_makanan->hpp->makanan->id)}}">{{$event_makanan->hpp->makanan->nama_makanan}} </a>  ({{$event_makanan->qty}} Porsi)
                                     <?php 
                                    $qty = $event_makanan->qty ;
                                       $listbahan = $resep->listbahan($event_makanan->hpp->makanan->id);  
@@ -144,7 +144,7 @@
                             <th class=" text-center">{{$detail->total_produksi}}</td>
                           </tr>
                           <tr>
-                            <td colspan="3"> <b>Harga Jual Perporsi</b> (HPP / Cost Precentace * 1,21) <br>
+                            <td colspan="3"> <b>Harga Jual Perporsi</b>(HPP *100 / cost percentage ({{$cost->besaran}}%) * 1,21 / jumlah pax ({{$detail->porsi}})) <br>
                             </td>
                             <td  class=" text-center"></td>
                             <th class=" text-center">{{$detail->h_jual_p}}</td>

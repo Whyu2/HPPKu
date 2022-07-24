@@ -246,6 +246,8 @@ class EventController extends Controller
     public function destroy(Request $request)
     {
         $id= $request->input('delete_event');
+
+      
         Eveent::whereId($id)->delete();
         return redirect('/event')->with('hapus', 'Data Event Berhasil Dihapus!');
     }

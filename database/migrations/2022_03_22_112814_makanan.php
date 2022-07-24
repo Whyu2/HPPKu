@@ -16,7 +16,7 @@ class Makanan extends Migration
         Schema::create('makanans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onUpdate('cascade') ->onDelete('cascade');
-            $table->foreignId('kategori_id')->constrained('kategoris')->onUpdate('cascade') ->onDelete('cascade');
+            $table->foreignId('kategori_id')->constrained('kategoris')->onUpdate('cascade') ->onDelete('restrict');
             $table->char('kd_makanan', 11);
             $table->char('nama_makanan', 128);
             $table->string('penyajian');

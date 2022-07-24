@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kategori;
+use App\Models\Makanan;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -126,7 +127,13 @@ class KategoriController extends Controller
     public function destroy(Request $request)
     {
         $id= $request->input('delete_kategori');
+        $makanana = makanan::where('kategori_id',$id)->first();
+        //validasi ketika data digunakan
+        if ($makanana) {
+            return redirect('/kategori')->with('hapus', 'Data Kategori gagal dihapus karena masih digunakan!');
+        } else {
             Kategori::whereId($id)->delete();
             return redirect('/kategori')->with('hapus', 'Data Kategori berhasil dihapus!');
+        }
     }
 }

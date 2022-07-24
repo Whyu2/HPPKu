@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Waktu;
+use App\Models\Eveent;
 use Illuminate\Http\Request;
 
 class WaktuController extends Controller
@@ -111,7 +112,13 @@ class WaktuController extends Controller
     public function destroy(Request $request)
     {
         $id= $request->input('delete_waktu');
-        Waktu::whereId($id)->delete();
-        return redirect('/waktu')->with('hapus', 'Data waktu berhasil dihapus!');
+        $event = Eveent::where('waktu_id',$id)->first();
+        if ($event) {
+            return redirect('/waktu')->with('hapus', 'Data waktu gagal dihapus karena masih digunakan!');
+        } else {
+            Waktu::whereId($id)->delete();
+            return redirect('/waktu')->with('hapus', 'Data waktu berhasil dihapus!');
+        }
+      
     }
 }
